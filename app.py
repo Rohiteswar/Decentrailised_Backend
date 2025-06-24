@@ -1,3 +1,4 @@
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from models import db, Note
@@ -6,12 +7,17 @@ from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
 db.init_app(app)
 CORS(app)
 
-@app.before_first_request
-def create_tables():
+# ✅ Ensure tables are created (SQLite-compatible on Render)
+with app.app_context():
     db.create_all()
+
+@app.route("/")
+def home():
+    return "Notebook Flask backend running!", 200
 
 @app.route("/api/notes", methods=["GET"])
 def get_notes():
